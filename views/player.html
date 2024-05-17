@@ -1,0 +1,104 @@
+{{ block "player" . }}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.js" integrity="sha384-qbtR4rS9RrUMECUWDWM2+YGgN3U4V4ZncZ0BvUcg9FGct0jqXz3PUdVpU1p0yrXS" crossorigin="anonymous"></script>
+        <script src="js/frameSwap.js"></script>
+        <style>
+            #view {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+            .frame {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                transition: opacity 0.03s;
+            }
+            .frame.hidden {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                transition: opacity 0.03s ease-in-out;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="view">
+            {{ template "frame" .VideoData }}
+        </div>
+        {{ template "buffer" . }}
+    </body>
+</html>
+{{ end }}
+
+{{ block "buffer" . }}
+<div hidden id="buffer">
+</div>
+{{ template "buffer-init" .BufferData }}
+{{ end }}
+
+{{ block "buffer-init" . }}
+<div hidden
+    hx-get="/video/{{ .Id }}/buffer-init"
+    hx-swap="outerHTML"
+    hx-trigger="load"
+    />
+{{ end }}
+
+{{ block "buffer-fetch" . }}
+<div hidden
+    hx-get="/video/{{ .Id }}/buffer/{{ .EndBuffer }}"
+    hx-swap="outerHTML"
+    hx-trigger="load delay:2s"
+    />
+{{ end }}
+
+{{ block "frame" . }}
+<!--
+<img src="frames/{{ .Id }}/{{ .Time }}.jpg" width="100%"
+    hx-get="/video/{{ .Id }}/next-frame"
+    hx-swap="outerHTML"
+    hx-trigger="load delay:0.033s" />
+-->
+<img class="frame" src="frames/{{ .Id }}/{{ .Time }}.jpg" />
+{{ end }}
+
+{{ block "bufferFrame" . }}
+<img class="buffer-frame frame" src="frames/{{ .Id }}/{{ .EndBuffer }}.jpg" />
+{{ end }}
+
+{{ block "bufferFrame-oob" . }}
+<div id="buffer" hx-swap-oob="beforeend">
+    {{ template "bufferFrame" . }}
+</div>
+{{ end }}
+
+{{ block "bufferFrame-first" . }}
+<img id="next-buffer-frame" class="buffer-frame frame" src="frames/{{ .Id }}/{{ .EndBuffer }}.jpg" />
+{{ end }}
+
+{{ block "bufferFrame-first-oob" . }}
+<div id="buffer" hx-swap-oob="beforeend">
+    {{ template "bufferFrame-first" . }}
+</div>
+{{ end }}
+
+{{ block "frameSwapper" . }}
+<script src="js/frameSwapper.js"></script>
+{{ end }}
+
+{{ block "frameSwapper-oob" . }}
+<div id="buffer" hx-swap-oob="afterend">
+    {{ template "frameSwapper" }}
+</div>
+{{ end }}
