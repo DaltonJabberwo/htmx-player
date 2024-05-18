@@ -16,7 +16,7 @@ func main() {
     e := echo.New()
     e.Use(middleware.Logger())
     
-    player := newPlayer(1, 1)
+    player := newPlayer(1, 30, 1)
     e.Renderer = newTemplate()
 
     e.Static("/js", "js")
@@ -47,7 +47,6 @@ func main() {
                 c.Render(200, "bufferFrame-oob", player.BufferData)
             }
         }
-        c.Render(200, "frameSwap-oob", player.BufferData)
         return c.Render(200, "buffer-fetch", player.BufferData)
     })
 
