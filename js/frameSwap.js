@@ -1,4 +1,4 @@
-function updateFrame() {
+function updateFrame(fps) {
     // Get the elements
     var view = document.getElementById("view");
     var nextBufferFrame = document.getElementById("next-buffer-frame");
@@ -21,7 +21,7 @@ function updateFrame() {
                 if (oldFrame.parentNode) {
                     oldFrame.parentNode.removeChild(oldFrame);
                 }
-            }, (1000 / 30));
+            }, (1000 / fps));
         }
 
         nextBufferFrame.removeAttribute("id");
@@ -36,9 +36,9 @@ function updateFrame() {
     }
 
     // Schedule the next update
-    setTimeout(updateFrame, 1000 / 30);
+    setTimeout(updateFrame, 1000 / fps, fps);
 }
 
 // Start the update loop
-setTimeout(updateFrame, 10);
+//setTimeout(updateFrame, 10);
 

@@ -44,6 +44,7 @@
 {{ block "buffer" . }}
 <div hidden id="buffer">
 </div>
+{{ template "frameSwapper" .VideoData }}
 {{ template "buffer-init" .BufferData }}
 {{ end }}
 
@@ -64,12 +65,6 @@
 {{ end }}
 
 {{ block "frame" . }}
-<!--
-<img src="frames/{{ .Id }}/{{ .Time }}.jpg" width="100%"
-    hx-get="/video/{{ .Id }}/next-frame"
-    hx-swap="outerHTML"
-    hx-trigger="load delay:0.033s" />
--->
 <img class="frame" src="frames/{{ .Id }}/{{ .Time }}.jpg" />
 {{ end }}
 
@@ -94,11 +89,7 @@
 {{ end }}
 
 {{ block "frameSwapper" . }}
-<script src="js/frameSwapper.js"></script>
-{{ end }}
-
-{{ block "frameSwapper-oob" . }}
-<div id="buffer" hx-swap-oob="afterend">
-    {{ template "frameSwapper" }}
-</div>
+<script>
+    setTimeout(updateFrame, 10, {{ .Framerate }});
+</script>
 {{ end }}
