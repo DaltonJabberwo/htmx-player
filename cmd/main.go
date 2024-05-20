@@ -16,7 +16,7 @@ func main() {
     e := echo.New()
     e.Use(middleware.Logger())
     
-    player := newPlayer(1, 30, 1)
+    player := newPlayer(0, 60, 1)
     e.Renderer = newTemplate()
 
     e.Static("/js", "js")
@@ -59,7 +59,7 @@ func main() {
         } else {
             player.BufferData.EndBuffer = int32(lastFrame)
         }
-        for i := 0; i < 60; i++ {
+        for i := 0; i < (2*player.VideoData.Framerate); i++ {
             nextFrame := player.BufferData.EndBuffer + 1
             path := fmt.Sprintf("frames/%s/%d.jpg", idStr, nextFrame)
             if _, err := os.Stat(path); err != nil {
