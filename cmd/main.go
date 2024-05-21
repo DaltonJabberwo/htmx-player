@@ -29,7 +29,6 @@ func main() {
         return c.Render(200, "player", player)
     })
     
-    // TODO: Refactor to work with video segments rather than image frames.
     e.GET("/video/:id/buffer-init", func(c echo.Context) error {
         idStr := c.Param("id")
         e.Logger.Print(idStr)
