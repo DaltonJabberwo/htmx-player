@@ -5,9 +5,9 @@ type Player struct {
     BufferData BufferData
 }
 
-func newPlayer(id int, fps int, time int32) Player {
+func newPlayer(id int, time int32) Player {
     return Player {
-        VideoData: newVideoData(id, fps, time),
+        VideoData: newVideoData(id, time),
         BufferData: newBufferData(id, time),
     }
 }

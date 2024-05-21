@@ -16,71 +16,73 @@ func main() {
     e := echo.New()
     e.Use(middleware.Logger())
     
-    player := newPlayer(0, 60, 1)
+    player := newPlayer(1, 1)
     e.Renderer = newTemplate()
 
     e.Static("/js", "js")
     e.Static("/css", "css")
     e.Static("/images", "images")
     e.Static("/frames", "frames")
+    e.Static("/segments", "segments")
 
     e.GET("/", func(c echo.Context) error {
         return c.Render(200, "player", player)
     })
     
+    // TODO: Refactor to work with video segments rather than image frames.
     e.GET("/video/:id/buffer-init", func(c echo.Context) error {
         idStr := c.Param("id")
         e.Logger.Print(idStr)
         first := true
-        for i := 0; i < 150; i++ {
-            nextFrame := player.BufferData.EndBuffer + 1
-            path := fmt.Sprintf("frames/%s/%d.jpg", idStr, nextFrame)
+        for i := 0; i < 3; i++ {
+            nextSeg := player.BufferData.EndBuffer + 1
+            path := fmt.Sprintf("segments/%s/%d.mp4", idStr, nextSeg)
             if _, err := os.Stat(path); err != nil {
                 player.BufferData.EndBuffer = 1
             } else {
                 player.BufferData.EndBuffer += 1
             }
             if first {
-                c.Render(200, "bufferFrame-first-oob", player.BufferData)
+                c.Render(200, "bufferSeg-first-oob", player.BufferData)
                 first = false
             } else {
-                c.Render(200, "bufferFrame-oob", player.BufferData)
+                c.Render(200, "bufferSeg-oob", player.BufferData)
             }
         }
         return c.Render(200, "buffer-fetch", player.BufferData)
     })
 
-    e.GET("/video/:id/buffer/:last-frame", func(c echo.Context) error {
+    e.GET("/video/:id/buffer/:last-seg", func(c echo.Context) error {
         idStr := c.Param("id")
-        lastFrameStr := c.Param("last-frame")
-        lastFrame, err := strconv.Atoi(lastFrameStr)
+        lastSegStr := c.Param("last-seg")
+        lastSeg, err := strconv.Atoi(lastSegStr)
         if err != nil {
             player.BufferData.EndBuffer = player.VideoData.Time
         } else {
-            player.BufferData.EndBuffer = int32(lastFrame)
+            player.BufferData.EndBuffer = int32(lastSeg)
         }
-        for i := 0; i < (2*player.VideoData.Framerate); i++ {
-            nextFrame := player.BufferData.EndBuffer + 1
-            path := fmt.Sprintf("frames/%s/%d.jpg", idStr, nextFrame)
+        for i := 0; i < 1; i++ {
+            nextSeg := player.BufferData.EndBuffer + 1
+            path := fmt.Sprintf("segments/%s/%d.mp4", idStr, nextSeg)
             if _, err := os.Stat(path); err != nil {
                 player.BufferData.EndBuffer = 1
             } else {
                 player.BufferData.EndBuffer += 1
             }
-            c.Render(200, "bufferFrame-oob", player.BufferData)
+            c.Render(200, "bufferSeg-oob", player.BufferData)
         }
         return c.Render(200, "buffer-fetch", player.BufferData)
     })
     
-    e.GET("/video/:id/next-frame", func(c echo.Context) error {
-        nextFrame := player.VideoData.Time + 1
-        path := fmt.Sprintf("frames/%s/%d.jpg", c.Param("id"), nextFrame)
+    e.GET("/video/:id/next-seg", func(c echo.Context) error {
+        nextSeg := player.VideoData.Time + 1
+        path := fmt.Sprintf("segments/%s/%d.mp4", c.Param("id"), nextSeg)
         if _, err := os.Stat(path); err != nil {
             player.VideoData.Time = 1
         } else {
             player.VideoData.Time += 1
         }
-        return c.Render(200, "frame", player.VideoData)
+        return c.Render(200, "segment", player.VideoData)
     })
 
     e.Logger.Fatal(e.Start(":3902"))

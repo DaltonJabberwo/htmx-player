@@ -1,44 +1,52 @@
-function updateFrame(fps) {
+function updateSeg() {
     // Get the elements
     var view = document.getElementById("view");
-    var nextBufferFrame = document.getElementById("next-buffer-frame");
+//    var nextBufferSeg = document.getElementById("next-buffer-seg");
     var buffer = document.getElementById("buffer");
-//    var nextBufferFrame = buffer.querySelector(".buffer-frame");
+    var nextBufferSeg = buffer.querySelector(".buffer-seg");
 
     // Check if the elements exist
-    if (view && nextBufferFrame && buffer) {
+    if (view && nextBufferSeg && buffer) {
         // Move the next buffer frame to the view
-        view.appendChild(nextBufferFrame);
+        view.appendChild(nextBufferSeg);
 
         requestAnimationFrame(() => {
-            nextBufferFrame.classList.remove("hidden");
+            nextBufferSeg.classList.remove("hidden");
         });
 
-        var oldFrame = view.querySelector(".frame:not(.hidden)");
-        if (oldFrame) {
-            oldFrame.classList.add("hidden");
+        var oldSeg = view.querySelector(".seg:not(.hidden)");
+        if (oldSeg) {
+            oldSeg.classList.add("hidden");
             setTimeout(() => {
-                if (oldFrame.parentNode) {
-                    oldFrame.parentNode.removeChild(oldFrame);
+                if (oldSeg.parentNode) {
+                    oldSeg.parentNode.removeChild(oldSeg);
                 }
-            }, (1000 / fps));
+            }, (1000 * 2));
         }
 
-        nextBufferFrame.removeAttribute("id");
+        nextBufferSeg.removeAttribute("id");
 
         // Set the ID on the next buffer frame
-        var bufferFrame = buffer.querySelector(".buffer-frame:not([id])");
-        if (bufferFrame) {
-            bufferFrame.setAttribute("id", "next-buffer-frame");
+        var bufferSeg = buffer.querySelector(".buffer-seg:not([id])");
+        if (bufferSeg) {
+            bufferSeg.setAttribute("id", "next-buffer-seg");
         }
     } else {
-        console.error("One or more elements not found:", { view, nextBufferFrame, buffer });
+        console.error("One or more elements not found:", { view, nextBufferSeg, buffer });
     }
 
     // Schedule the next update
-    setTimeout(updateFrame, 1000 / fps, fps);
+//    setTimeout(updateSeg, 1000 * 2.5);
+//    nextBufferSeg.removeEventListener("ended", func);
+    nextBufferSeg.onended = (event) => {
+        updateSeg();
+    }
 }
 
 // Start the update loop
-//setTimeout(updateFrame, 10);
+//setTimeout(updateSeg, 10);
+setTimeout(() => {
+    document.getElementById("view").querySelector(".seg").onended = (event) => {
+        updateSeg();
+    }}, 10);
 

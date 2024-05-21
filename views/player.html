@@ -13,7 +13,7 @@
                 height: 100%;
                 overflow: hidden;
             }
-            .frame {
+            .seg {
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -21,7 +21,7 @@
                 height: 100%;
                 transition: opacity 0.03s;
             }
-            .frame.hidden {
+            .seg.hidden {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -34,7 +34,7 @@
     </head>
     <body>
         <div id="view">
-            {{ template "frame" .VideoData }}
+            {{ template "segment" .VideoData }}
         </div>
         {{ template "buffer" . }}
     </body>
@@ -44,7 +44,7 @@
 {{ block "buffer" . }}
 <div hidden id="buffer">
 </div>
-{{ template "frameSwapper" .VideoData }}
+{{ template "segSwapper" .VideoData }}
 {{ template "buffer-init" .BufferData }}
 {{ end }}
 
@@ -64,32 +64,32 @@
     />
 {{ end }}
 
-{{ block "frame" . }}
-<img class="frame" src="frames/{{ .Id }}/{{ .Time }}.jpg" />
+{{ block "segment" . }}
+<video autoplay muted class="seg" src="segments/{{ .Id }}/{{ .Time }}.mp4" />
 {{ end }}
 
-{{ block "bufferFrame" . }}
-<img class="buffer-frame frame" src="frames/{{ .Id }}/{{ .EndBuffer }}.jpg" />
+{{ block "bufferSeg" . }}
+<video autoplay muted class="buffer-seg seg" src="segments/{{ .Id }}/{{ .EndBuffer }}.mp4" />
 {{ end }}
 
-{{ block "bufferFrame-oob" . }}
+{{ block "bufferSeg-oob" . }}
 <div id="buffer" hx-swap-oob="beforeend">
-    {{ template "bufferFrame" . }}
+    {{ template "bufferSeg" . }}
 </div>
 {{ end }}
 
-{{ block "bufferFrame-first" . }}
-<img id="next-buffer-frame" class="buffer-frame frame" src="frames/{{ .Id }}/{{ .EndBuffer }}.jpg" />
+{{ block "bufferSeg-first" . }}
+<video autoplay muted id="next-buffer-seg" class="buffer-seg seg" src="segments/{{ .Id }}/{{ .EndBuffer }}.mp4" />
 {{ end }}
 
-{{ block "bufferFrame-first-oob" . }}
+{{ block "bufferSeg-first-oob" . }}
 <div id="buffer" hx-swap-oob="beforeend">
-    {{ template "bufferFrame-first" . }}
+    {{ template "bufferSeg-first" . }}
 </div>
 {{ end }}
 
-{{ block "frameSwapper" . }}
+{{ block "segSwapper" . }}
 <script>
-    setTimeout(updateFrame, 10, {{ .Framerate }});
+//    setTimeout(updateSeg, 10);
 </script>
 {{ end }}
